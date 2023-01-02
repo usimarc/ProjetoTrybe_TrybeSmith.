@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { Request, Response, NextFunction } from 'express';
 import { TUser } from '../types';
 
 dotenv.config();
@@ -12,8 +13,14 @@ const criarToken = (user: TUser) => {
     expiresIn: '50min',
     algorithm: 'HS256',
   });
-
   return token;
+};
+
+const validaLogin = (req: Request, res: Response, next: NextFunction) => {
+  const { username, password } = req.body;
+  if (!username) return res.status(400).json({ message: '"username" is required' });
+  if (!password) return res.status(400).json({ message: '"password" is required' });
+  next();
 };
 
 // const verificaToken = (token) => {
@@ -25,4 +32,7 @@ const criarToken = (user: TUser) => {
 //   }
 // };
 
-export = criarToken;
+export = {
+  criarToken,
+  validaLogin,
+};
